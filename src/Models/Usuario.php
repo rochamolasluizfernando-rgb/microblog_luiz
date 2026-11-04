@@ -5,6 +5,7 @@ use Microblog\Enums\TipoUsuario;
 
 final class Usuario
 {
+    /* alteramos a forma dos tipos desta propriedade */
     private int $id;
     private string $nome;
     private string $email;
@@ -16,7 +17,7 @@ final class Usuario
         string $email,
         string $senha,
         TipoUsuario $tipo = TipoUsuario::EDITOR,
-        int $id
+        ?int $id = null // parâmetro opcional e com valor padrão null
     ) {
         $this->nome = $nome;
         $this->email = $email;

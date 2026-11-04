@@ -15,7 +15,7 @@ try {
     // Usamos Throwable para capturar tanto situações de Exception quanto de Error
     
     // Registramos o erro no log para análise do programor
-    Utills::registrarLog($e);
+    Utils::registrarLog($e);
     
     // Definimos uma mensagem genérica para exibir no Front-End
     $mensagemErro = "Não foi possível carregar a lista de usuários";

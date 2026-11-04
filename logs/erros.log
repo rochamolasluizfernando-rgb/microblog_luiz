@@ -13,3 +13,8 @@ Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Models\Usuario.php
 Linha: 26
 Mensagem: Cannot assign null to property Microblog\Models\Usuario::$id of type int
 
+[2026-11-04 10:58:05]
+Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Models\Usuario.php
+Linha: 26
+Mensagem: Cannot assign null to property Microblog\Models\Usuario::$id of type int
+

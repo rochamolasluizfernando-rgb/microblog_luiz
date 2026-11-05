@@ -1,5 +1,4 @@
 <?php
-
 namespace Microblog\Database;
 
 use Microblog\Helpers\Utils;

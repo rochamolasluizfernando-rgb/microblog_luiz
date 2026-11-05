@@ -9,7 +9,6 @@ O commit inicial (`6035498`) adicionou a aplicação PHP do microblog, com pági
 
 Antes das alterações de hoje, a branch já havia organizado modelos, helpers e enums sob o namespace `Microblog`, configurado o autoload PSR-4 do Composer e integrado a listagem administrativa de usuários ao `UsuarioServico`. A listagem apresenta dados dinâmicos com escape HTML e registra falhas, exibindo uma mensagem amigável (`041b6f6`).
 
-- Serviço de usuários: foi criado `UsuarioServico`, responsável por obter a conexão PDO e listar usuários (`id`, `nome`, `email` e `tipo`) em ordem alfabética. Erros de banco são registrados e convertidos em uma exceção com mensagem genérica (`c97eac0`).
 ## Alterações feitas em 04/11/2026
 
 - **Tratamento de erros da listagem:** `admin/usuarios.php` passou a capturar `Throwable`, registrar os detalhes no log e apresentar uma mensagem genérica ao usuário (`9e13788`). O nome/import da classe `Utils` foi corrigido (`5cd3d80`).

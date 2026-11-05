@@ -1,16 +1,41 @@
-<?php require_once __DIR__ . '/../includes/cabecalho-admin.php'; ?>
+<?php
+require_once __DIR__ . '/../includes/cabecalho-admin.php';
 
-<div class="row">
-    <article class="col-12 bg-white rounded shadow my-1 py-4">
-        <h2 class="text-center">Inserir nova categoria</h2>
-        <form class="mx-auto w-75" action="" method="post" id="form-inserir" name="form-inserir">
-            <div class="mb-3">
-                <label class="form-label" for="nome">Nome:</label>
-                <input class="form-control" type="text" id="nome" name="nome" value="Nome provisório">
-            </div>
-            <button class="btn btn-primary" id="inserir" name="inserir"><i class="bi bi-save"></i> Inserir</button>
-        </form>
-    </article>
-</div>
+use Microblog\Models\Categoria;
+use Microblog\Services\CategoriaServico;
 
-<?php require_once __DIR__ . '/../includes/rodape-admin.php'; ?>
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+if($_SERVER["REQUEST_METHOD"] === "POST"){
+
+    $categoria = new Categoria(
+        $_POST["nome"]
+    );
+
+    $servico = new CategoriaServico();
+
+    $servico->inserir($categoria);
+
+    header("Location: categorias.php");
+    exit;
+}
+?>
+
+<h1>Nova Categoria</h1>
+
+<form method="post">
+
+    <p>
+        <label for="nome">Nome</label>
+        <input
+            type="text"
+            name="nome"
+            id="nome"
+            required>
+    </p>
+
+    <button type="submit">
+        Salvar
+    </button>
+
+</form>

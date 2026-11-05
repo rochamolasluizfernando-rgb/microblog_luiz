@@ -1,28 +1,28 @@
 # Resumo do histórico da branch
 
-Branch analisada: `02_aula-0411`, sincronizada com `origin/02_aula-0411`.
-Resumo atualizado em 04/11/2026, considerando os commits até `8c47df5`.
+Branch analisada: `03_aula-0511`, baseada no histórico anterior da `02_aula-0411`.
+Resumo atualizado em 05/11/2026, considerando os commits até `a60d528`.
 
-## Base do projeto e histórico anterior
+## Base do projeto
 
-O commit inicial (`6035498`) adicionou a aplicação PHP do microblog, com páginas públicas de notícias, área administrativa para categorias, notícias e usuários, conexão e modelos de dados, recursos visuais e materiais SQL/documentação do banco.
+O commit inicial (`6035498`) estabeleceu a aplicação PHP do microblog, com páginas públicas de notícias, área administrativa, conexão e modelos de dados e estrutura do banco. Em seguida, o projeto organizou classes com o namespace `Microblog`, configurou o autoload PSR-4 do Composer e deixou de rastrear a pasta `vendor/`.
 
-Antes das alterações de hoje, a branch já havia organizado modelos, helpers e enums sob o namespace `Microblog`, configurado o autoload PSR-4 do Composer e integrado a listagem administrativa de usuários ao `UsuarioServico`. A listagem apresenta dados dinâmicos com escape HTML e registra falhas, exibindo uma mensagem amigável (`041b6f6`).
+Na área administrativa de usuários, a listagem passou a usar dados reais do banco em vez de valores fixos, escapar os dados exibidos e ocultar a tabela quando ocorre erro (`041b6f6`). O tratamento de falhas foi ampliado com registro de detalhes no log e mensagens genéricas para o usuário (`9e13788`).
 
-## Alterações feitas em 04/11/2026
+## Cadastro e acesso aos usuários
 
-- **Tratamento de erros da listagem:** `admin/usuarios.php` passou a capturar `Throwable`, registrar os detalhes no log e apresentar uma mensagem genérica ao usuário (`9e13788`). O nome/import da classe `Utils` foi corrigido (`5cd3d80`).
-- **Cadastro de usuários:** `admin/usuario-insere.php` passou a normalizar e validar os campos, codificar a senha, converter o tipo para `TipoUsuario` e cadastrar por meio de `UsuarioServico`. Mensagens de validação e falhas inesperadas recebem tratamentos distintos; os valores preenchidos são preservados quando há erro (`f2c4ed6`).
-- **Inserção pelo serviço:** `UsuarioServico::inserir()` grava os dados usando uma instrução preparada e registra erros de banco antes de lançar uma exceção genérica (`1078750`).
-- **ID opcional no modelo:** `Usuario::$id` passou a aceitar `null`, e o argumento correspondente do construtor tornou-se opcional, permitindo criar objetos antes da geração do ID pelo banco (`e59b15d`, `82c7c20`). O log `logs/erros.log` registra ocorrências anteriores de atribuição de `null` a uma propriedade tipada como `int` (`7d6ced2`, `82c7c20`).
-- **Autoload:** foi normalizada a formatação do mapeamento PSR-4 em `composer.json` (`9859676`).
-- **Busca por ID:** `UsuarioServico::buscarPorId()` consulta um usuário por ID com parâmetro vinculado e registra erros de banco (`3629d82`).
-- **Tela de edição:** `admin/usuario-atualiza.php` valida/normaliza o ID da URL, carrega os dados pelo serviço, trata falhas e ausência de usuário, preenche o formulário e escapa nome/e-mail antes de exibi-los. O tipo do usuário carregado determina a opção selecionada (`8c47df5`).
+- O cadastro foi integrado ao `UsuarioServico`, que insere usuários com consulta preparada e registra erros de persistência (`1078750`). O formulário normaliza e valida os campos, codifica a senha e trata separadamente erros de validação e falhas inesperadas.
+- O ID do modelo `Usuario` tornou-se anulável/opcional para permitir criar instâncias antes da geração do ID pelo banco (`e59b15d`, `82c7c20`); ocorrências relacionadas à atribuição de ID nulo também foram registradas no log.
+- `UsuarioServico::buscarPorId()` foi criado para consultar um registro pelo ID com parâmetro vinculado, registrar falhas e permitir que a tela de edição carregue os dados correspondentes (`3629d82`, `8c47df5`).
 
-## Observação sobre a busca usada na tela de edição
+## Edição de usuários — 05/11/2026
 
-`buscarPorId()` retorna o resultado de `fetchAll()` (uma lista de registros), enquanto `usuario-atualiza.php` acessa `$dadosUsuario['nome']`, `$dadosUsuario['email']` e `$dadosUsuario['tipo']` como se tivesse recebido um único registro associativo. Convém alinhar o formato retornado e o esperado pela tela antes de considerar o preenchimento do formulário validado.
+- A tela de edição passou a normalizar e validar nome, e-mail e tipo de usuário antes de atualizar os dados (`9701577`).
+- `UsuarioServico::atualizar()` foi implementado com consulta preparada e tratamento/log de erros do banco (`04072ca`).
+- O fluxo da tela aplica as validações, mantém a senha existente quando o campo de nova senha fica vazio e valida/codifica a senha quando ela é informada. Após atualizar, redireciona o usuário; falhas inesperadas são registradas e tratadas (`a2be022`).
+- Foram adicionados ao log registros de falhas na verificação de senhas nulas (`3c4e42a`).
+- A busca por ID foi corrigida para retornar um único registro com `fetch()` ou `null`, em vez de uma lista de resultados com `fetchAll()` (`a60d528`). Isso alinha o formato retornado pelo serviço ao que a tela de edição espera.
 
-## Estado atual
+## Estado do histórico analisado
 
-Antes desta atualização, a branch estava sincronizada com `origin/02_aula-0411` e sem alterações locais pendentes. O commit mais recente é `8c47df5` (`Valida e carrega usuário pelo serviço`); a única alteração local após a análise é este resumo.
+O commit mais recente da branch é `a60d528` (`Retorna um único usuário na consulta`). O trabalho registrado no histórico percorre a estruturação da aplicação, a listagem e o cadastro de usuários, e chega à busca, edição, validação e tratamento de erros desses fluxos.

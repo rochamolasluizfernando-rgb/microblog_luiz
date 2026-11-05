@@ -73,7 +73,7 @@ final class UsuarioServico
             $consulta->execute();
 
             // Ternário conciso/abreviado (se fetch for TRUE, retorna ele mesmo; senão null)
-            return $consulta->fetchAll() ?: null;
+            return $consulta->fetch() ?: null;
 
             
 

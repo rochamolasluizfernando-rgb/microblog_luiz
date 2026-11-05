@@ -3,6 +3,7 @@
 use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
+use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
 
 require_once __DIR__.'/../vendor/autoload.php';
@@ -37,6 +38,11 @@ usando os dados do usuário (se disponíveis) */
 $nome = $dadosUsuario['nome'] ?? "";
 $email = $dadosUsuario['email'] ?? "";
 $tipo = $dadosUsuario['tipo'] ?? "";
+
+// Utils::dump($dadosUsuario);
+// Utils::dump($nome);
+// Utils::dump($email);
+// Utils::dump($tipo);
  
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     try {
@@ -50,10 +56,35 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
         Validacoes::validarEmail($email);
         Validacoes::validarTipo($tipo);
         $tipoEnum = TipoUsuario::from($tipo);
-    } catch (InvalidArgumentException $e) {
-        
-    } catch (Throwable $e){
-        
+
+        // Capturando literalmente a senha como foi digitada
+        $senhaBruta = $_POST['senha'] ?? '';
+
+        /* Se a senha não foi preenchida, mantenha a senha atual. */
+        /* Se o campo senha for preenchido, verificar se é a mesma senha. */
+        /* Se for a mesma, não faz nada. Se for uma nova senha, codifica (faz o hash) */
+        if($senhaBruta === ""){
+            $senha = $dadosUsuario['senha'];
+        } else {
+            Validacoes::validarSenha($senhaBruta);
+            $senha = Utils::verificarSenha($senhaBruta, $dadosUsuario['senha']);
+        }
+
+        // Criando um objeto com os dados do usuário visando a atualização no banco 
+        $usuario = new Usuario($nome, $email, $senha, $tipoEnum, $id);
+
+        // Chamamos o serviço responsável por atualizar o usuário 
+        $usuarioServico->atualizar($usuario);
+
+        // Se tudo der certo, redirecionamos: 
+        header("location:usuarios.php");
+        exit;
+
+    } catch (InvalidArgumentException $e) { // se validações falharem 
+        $mensagemErro = $e->getMessage();
+    } catch (Throwable $e){ // se qualquer outro erro/exceção acontecer 
+        Utils::registrarLog($e);
+        $mensagemErro = "Não foi possível atualizar o usuário. Tente novamente";
     }
 }
 

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php';
 use Microblog\Models\Categoria;
 use Microblog\Services\CategoriaServico;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $servico = new CategoriaServico();
 

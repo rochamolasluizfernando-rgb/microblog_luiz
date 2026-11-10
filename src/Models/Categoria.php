@@ -1,14 +1,12 @@
 <?php
 namespace Microblog\Models;
 
-class Categoria
+final class Categoria
 {
     private ?int $id;
     private string $nome;
 
-    public function __construct(
-        string $nome,
-        ?int $id = null
+    public function __construct(string $nome, ?int $id = null
     ){
         $this->id = $id;
         $this->nome = $nome;

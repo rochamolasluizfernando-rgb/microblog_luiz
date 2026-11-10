@@ -73,16 +73,4 @@ class CategoriaServico
 
         $consulta->execute();
     }
-
-    public function excluir(int $id): void
-    {
-        $sql = "DELETE FROM categorias
-                WHERE id = :id";
-
-        $consulta = $this->conexao->prepare($sql);
-
-        $consulta->bindValue(":id", $id);
-
-        $consulta->execute();
-    }
 }

@@ -89,7 +89,7 @@ final class CategoriaServico
             $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
-            throw new Exception("Erro ao excluir categoria");
+            throw new Exception("Erro ao excluir usuário");
         }
     }
 }

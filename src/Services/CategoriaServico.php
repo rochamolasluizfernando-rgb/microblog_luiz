@@ -1,11 +1,14 @@
 <?php
 namespace Microblog\Services;
 
+use Exception;
 use Microblog\Database\ConexaoBD;
+use Microblog\Helpers\Utils;
 use Microblog\Models\Categoria;
 use PDO;
+use PDOException;
 
-class CategoriaServico
+final class CategoriaServico
 {
     private PDO $conexao;
 
@@ -14,13 +17,18 @@ class CategoriaServico
         $this->conexao = ConexaoBD::getConexao();
     }
 
-    public function listar(): array
+    public function listarTodos(): array
     {
         $sql = "SELECT * FROM categorias ORDER BY nome";
-
-        $consulta = $this->conexao->query($sql);
-
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        
+        try {
+            $consulta = $this->conexao->query($sql);
+            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar categorias");
+        }
+        
     }
 
     public function buscarPorId(int $id): ?Categoria

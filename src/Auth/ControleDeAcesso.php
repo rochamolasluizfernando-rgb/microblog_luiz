@@ -1,44 +1,50 @@
 <?php
+
 namespace Microblog\Auth;
-
-/* Sessões no PHP  
-Funcionalidade usada para controlar o acesso a determinadas 
-páginas e recursos de um site/aplicação.
-
-Exemplos: áreas administrativas, painel de controle, área de cliente/aluno. 
-
-Nessas áreas, o acesso depende de alguma forma de autenticação, como login e 
-senha, biometria, por dois fatores etc. */
 
 final class ControleDeAcesso
 {
-    // Impedir a criação de objeto/instância
     private function __construct() {}
 
-    // Inicia a sessão se ela ainda não estiver ativa 
-    private static function iniciarSessao():void
+    private static function iniciarSessao(): void
     {
-        // Se o status da sessão NÃO FOR ativa (ou, se a sessão está inativa)
-        if(session_status() !== PHP_SESSION_ACTIVE){
-            // Então, iniciamos a sessão 
+        if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
     }
 
-    private static function encerrarSessao():void 
+    private static function encerrarSessao(): void
     {
-        $_SESSION = []; // limpar os dados do usuário armazenados na sessão 
-        session_destroy(); // destrói/remove quaisquer dados da sessão no navegador 
+        $_SESSION = [];
+        session_destroy();
     }
 
-    public static function exigirLogin():void
+    public static function exigirLogin(): void
     {
         self::iniciarSessao();
 
-        if(!isset($_SESSION['id'])){
-            // encerrar a sessão (ainda programar)
-            header("Location:../login.php?acesso_proibido");
+        if (!isset($_SESSION['id'])) {
+            header("Location: ../login.php?acesso_proibido=1");
             exit;
         }
+    }
+
+    public static function login(
+        int $id,
+        string $nome,
+        string $tipo
+    ): void {
+        self::iniciarSessao();
+
+        $_SESSION['id'] = $id;
+        $_SESSION['nome'] = $nome;
+        $_SESSION['tipo'] = $tipo;
+    }
+
+    public static function logout(): void
+    {
+        self::iniciarSessao();
+        self::encerrarSessao();
+        header("Location:../login.php?logout");
     }
 }

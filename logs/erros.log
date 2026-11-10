@@ -1,0 +1,5 @@
+[2026-11-10 09:56:37]
+Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\admin\categoria-exclui.php
+Linha: 13
+Mensagem: Call to a member function excluir() on null
+

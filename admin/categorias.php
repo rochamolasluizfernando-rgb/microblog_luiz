@@ -1,5 +1,5 @@
-<?php 
-require_once __DIR__ . '/../vendor/autoload.php'; 
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Microblog\Helpers\Utils;
 use Microblog\Services\CategoriaServico;
@@ -15,16 +15,16 @@ try {
     $mensagemErro = "Não foi possível carregar a lista de categorias";
 }
 
-require_once __DIR__ . '/../includes/cabecalho-admin.php'; 
+require_once __DIR__ . '/../includes/cabecalho-admin.php';
 ?>
 
 <div class="row">
     <article class="col-12 bg-white rounded shadow my-1 py-4">
-        <h2 class="text-center">Categorias 
+        <h2 class="text-center">Categorias
             <span class="badge bg-dark"><?= count($listaDeCategorias) ?></span>
         </h2>
 
-        <?php if($mensagemErro !== ""): ?>
+        <?php if ($mensagemErro !== ""): ?>
             <div class="alert alert-danger text-center">
                 <?= Utils::escaparHtml($mensagemErro) ?>
             </div>
@@ -36,33 +36,33 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php';
             </a>
         </p>
 
-        <?php if($mensagemErro === ""): ?>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nome</th>
-                        <th class="text-center">Operações</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <?php if ($mensagemErro === ""): ?>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th class="text-center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                <?php foreach($listaDeCategorias as $itemCategoria): ?>
-                    <tr>
-                        <td> <?= Utils::escaparHtml($itemCategoria['nome']) ?> </td>
-                        <td class="text-center">
-<a class="btn btn-warning" 
-href="categoria-atualiza.php?id=<?= Utils::escaparHtml($itemCategoria['id']) ?>"><i class="bi bi-pencil"></i> Atualizar</a>
-<a class="btn btn-danger excluir" 
-href="categoria-exclui.php?id=<?= Utils::escaparHtml($itemCategoria['id']) ?>"><i class="bi bi-trash"></i> Excluir</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                    
-                    
-                </tbody>
-            </table>
-        </div>
+                        <?php foreach ($listaDeCategorias as $itemCategoria): ?>
+                            <tr>
+                                <td> <?= Utils::escaparHtml($itemCategoria['nome']) ?> </td>
+                                <td class="text-center">
+                                    <a class="btn btn-warning"
+                                        href="categoria-atualiza.php?id=<?= Utils::escaparHtml($itemCategoria['id']) ?>"><i class="bi bi-pencil"></i> Atualizar</a>
+                                    <a class="btn btn-danger excluir"
+                                        href="categoria-exclui.php?id=<?= Utils::escaparHtml($itemCategoria['id']) ?>"><i class="bi bi-trash"></i> Excluir</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+
+
+                    </tbody>
+                </table>
+            </div>
         <?php endif; ?>
     </article>
 </div>

@@ -1,4 +1,5 @@
 <?php
+
 namespace Microblog\Services;
 
 use Exception;
@@ -19,66 +20,62 @@ final class CategoriaServico
 
     public function listarTodos(): array
     {
-        $sql = "SELECT * FROM categorias ORDER BY nome";
-        
+        $sql = "SELECT id, nome FROM categorias ORDER BY nome";
+
         try {
             $consulta = $this->conexao->query($sql);
-            return $consulta->fetchAll(PDO::FETCH_ASSOC);
+            return $consulta->fetchAll();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
             throw new Exception("Erro ao listar categorias");
         }
-        
-    }
-
-    public function buscarPorId(int $id): ?Categoria
-    {
-        $sql = "SELECT * FROM categorias WHERE id = :id";
-
-        $consulta = $this->conexao->prepare($sql);
-
-        $consulta->bindValue(":id", $id);
-        $consulta->execute();
-
-        $dados = $consulta->fetch(PDO::FETCH_ASSOC);
-
-        if(!$dados){
-            return null;
-        }
-
-        return new Categoria(
-            $dados["nome"],
-            $dados["id"]
-        );
     }
 
     public function inserir(Categoria $categoria): void
     {
-        $sql = "INSERT INTO categorias(nome)
-                VALUES(:nome)";
+        $sql = "INSERT INTO categorias (nome) VALUES(:nome)";
 
-        $consulta = $this->conexao->prepare($sql);
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":nome", $categoria->getNome());
+            $consulta->execute();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao inserir categoria");
+        }
+    }
 
-        $consulta->bindValue(":nome",
-            $categoria->getNome());
+    public function buscarPorId(int $id): ?array
+    {
+        $sql = "SELECT id, nome FROM categorias WHERE id = :id";
 
-        $consulta->execute();
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id);
+            $consulta->execute();
+            return $consulta->fetch() ?: null;
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao buscar categoria por ID.");
+        }
     }
 
     public function atualizar(Categoria $categoria): void
     {
         $sql = "UPDATE categorias
-                SET nome = :nome
-                WHERE id = :id";
+            SET nome = :nome
+            WHERE id = :id";
 
-        $consulta = $this->conexao->prepare($sql);
+        try {
+            $consulta = $this->conexao->prepare($sql);
 
-        $consulta->bindValue(":nome",
-            $categoria->getNome());
+            $consulta->bindValue(":nome", $categoria->getNome());
+            $consulta->bindValue(":id", $categoria->getId(), PDO::PARAM_INT);
 
-        $consulta->bindValue(":id",
-            $categoria->getId());
-
-        $consulta->execute();
+            $consulta->execute();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao atualizar categoria");
+        }
     }
 }

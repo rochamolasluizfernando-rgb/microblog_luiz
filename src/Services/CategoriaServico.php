@@ -85,6 +85,8 @@ final class CategoriaServico
 
         try {
             $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id);
+            $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
             throw new Exception("Erro ao excluir categoria");

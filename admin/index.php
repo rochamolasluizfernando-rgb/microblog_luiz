@@ -10,8 +10,10 @@ use Microblog\Helpers\Utils;
         
         <h2 class="display-4">Olá, <?= Utils::escaparHtml($_SESSION['nome']) ?>!</h2>
 
-        <p class="fs-5">Você está no <b>painel de controle e administração</b> do site 
-        Microblog e seu <b>nível de acesso</b> é 
+        <?php if(isset($_GET['perfil_atualizado'])): ?>
+            <p class="alert alert-primary">Dados atualizados com sucesso!</p>
+        <?php endif; ?>
+         
         <span class="badge bg-dark"><?= Utils::escaparHtml($_SESSION['tipo']) ?></span>.</p>
         <hr class="my-4">
         <div class="d-grid gap-2 d-md-block text-center">

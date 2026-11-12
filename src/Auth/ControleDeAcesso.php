@@ -46,5 +46,18 @@ final class ControleDeAcesso
         self::iniciarSessao();
         self::encerrarSessao();
         header("Location:../login.php?logout");
+        exit;
     }
+
+    // Verifica se o usuário logado é do tipo admin 
+    public static function usuarioEhAdmin(): bool
+    {
+        self::iniciarSessao();
+
+        // Se variável de sessão 'tipo' existe E o valor dela é 'admin'
+        // então significa que o usuário logado é um administrador
+        return isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'admin';
+    }
+
+
 }

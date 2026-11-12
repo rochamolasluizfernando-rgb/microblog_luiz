@@ -3,6 +3,7 @@
 Branch analisada: `03_aula-0511`, baseada no histórico anterior da `02_aula-0411`.
 Resumo atualizado em 05/11/2026, considerando os commits até `a60d528`.
 
+
 ## Base do projeto
 
 O commit inicial (`6035498`) estabeleceu a aplicação PHP do microblog, com páginas públicas de notícias, área administrativa, conexão e modelos de dados e estrutura do banco. Em seguida, o projeto organizou classes com o namespace `Microblog`, configurou o autoload PSR-4 do Composer e deixou de rastrear a pasta `vendor/`.

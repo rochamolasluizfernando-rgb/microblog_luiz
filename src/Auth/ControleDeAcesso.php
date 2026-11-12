@@ -59,5 +59,16 @@ final class ControleDeAcesso
         return isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'admin';
     }
 
+    public static function exigirAdmin(): void
+    {
+        // Garanta que está logado
+        self::exigirLogin();
 
+        // Verifica se NÃO É um admin
+        if(!self::usuarioEhAdmin()){
+            // Não sendo, manda pra página nao-autorizado
+            header("location:nao-autorizado.php");
+            exit;
+        }
+    }
 }

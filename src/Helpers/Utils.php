@@ -9,7 +9,6 @@ use DateTimeZone;
 
 class Utils
 {
-
     private function __construct() {}
 
     public static function normalizarEntrada(mixed $entrada, string $tipo = 'texto'): mixed

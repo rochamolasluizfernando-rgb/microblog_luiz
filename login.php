@@ -1,7 +1,9 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Helpers\Utils;
-
+use Microblog\Services\UsuarioServico;
 
 /* Mensagens relacionadas ao processo de login/logout */
 
@@ -26,6 +28,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location:login.php?campos_obrigatorios");
         exit;
     }
+
+    try {
+        // Buscando o usuário no BD através do e-mail informado 
+        $usuarioServico = new UsuarioServico();
+        $usuario = $usuarioServico->buscarPorEmail($email);
+
+        // Verfificar se a senha informada não corresponde a senha existente no BD 
+        if (!$usuario || !password_verify($senhaRecebida, $usuario['senha'])) {
+            header("location:login.php?dados_incorretos");
+            exit;
+        }
+
+        // Usuário existe e senha correta? Faz o processo de login
+        ControleDeAcesso::login($usuario['id'], $usuario['nome'], $usuario['tipo']);
+
+        // E redireciona para a página admin/index
+        header("location:admin/index.php");
+        exit;
+    } catch (Throwable $e) {
+        Utils::registrarLog($e);
+        header("location:login.php?erro");
+        exit;
+    }
 }
 
 require_once __DIR__ . '/includes/cabecalho.php';
@@ -36,14 +61,14 @@ require_once __DIR__ . '/includes/cabecalho.php';
 
         <form action="" method="post" id="form-login" class="mx-auto w-50">
 
-        <!-- Se existir alguma mensagem na variável $feedback,
+            <!-- Se existir alguma mensagem na variável $feedback,
         mostramos a mensagem para a pessoa. -->
-            <?php if(isset($feedback)): ?>
+            <?php if (isset($feedback)): ?>
                 <p class="my-2 alert alert-warning text-center">
                     <?= Utils::escaparHtml($feedback) ?>
                 </p>
             <?php endif; ?>
-            
+
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail:</label>
                 <input autofocus class="form-control" type="email" id="email" name="email" autocomplete="username">

@@ -1,6 +1,6 @@
 # Resumo do histórico da branch
 
-Branch analisada: `05_aula-1011`, baseada em `04_exercicio-categorias` e no histórico anterior de usuários. Resumo atualizado em 12/11/2026, até o commit `99f73df`.
+Branch analisada: `07_aula-1311`, continuação do histórico de `06_aula-1211` e das etapas anteriores. Resumo atualizado em 13/11/2026, até o commit `2ad3634`.
 
 ## Base e estrutura
 
@@ -29,6 +29,13 @@ O commit inicial (`6035498`) estabeleceu a aplicação PHP do microblog, com pá
 
 A área administrativa ganhou uma tela para carregar e atualizar o perfil da pessoa autenticada. O formulário valida nome e e-mail, permite alterar a senha sem exigir uma nova senha em toda edição, preserva o tipo de usuário e atualiza o nome na sessão após salvar. O painel exibe confirmação de atualização (`56f0128`, `99f73df`).
 
+## Cadastro de notícias
+
+- Foi criado o `NoticiaServico` com inserção por consulta preparada, registro técnico de falhas e mensagem genérica para a interface (`4253217`, `04b3ddf`).
+- O formulário administrativo passou a carregar as categorias do banco, validar os dados, associar a notícia ao usuário autenticado, processar a imagem enviada e encaminhar a inserção ao serviço (`c69a718`, `2ad3634`).
+- O modelo `Noticia` permite criar registros sem informar ID ou data, deixando esses valores a cargo do banco (`2e71595`).
+- Foram adicionadas imagens usadas pelas notícias de exemplo: `felicidade.jpg`, `mais.jpg` e `sanduiche.jpg` (`2ad3634`).
+
 ## Estado do histórico analisado
 
-O commit mais recente é `99f73df` (`Mostrar mensagem de atualização de perfil bem-sucedida`), em 12/11/2026. A branch reúne a estruturação inicial, o gerenciamento de usuários e categorias e os fluxos de autenticação, autorização administrativa e edição de perfil. Os commits analisados estão sincronizados com `origin/05_aula-1011`.
+O commit mais recente é `2ad3634` (`Implementa cadastro de notícias`), em 13/11/2026. A branch reúne a estruturação inicial, o gerenciamento de usuários e categorias, os fluxos de autenticação, autorização administrativa e edição de perfil, e agora inicia o cadastro administrativo de notícias. Os commits analisados estão sincronizados com `origin/07_aula-1311`.

@@ -2,7 +2,10 @@
 
 use Microblog\Enums\Destaque;
 use Microblog\Helpers\Utils;
+use Microblog\Helpers\Validacoes;
+use Microblog\Models\Noticia;
 use Microblog\Services\CategoriaServico;
+use Microblog\Services\NoticiaServico;
 
 require_once __DIR__ .'/../vendor/autoload.php';
 require_once __DIR__ . '/../includes/cabecalho-admin.php'; 
@@ -27,6 +30,43 @@ try {
 } catch (Throwable $e) {
     Utils::registrarLog($e);
     $mensagemErro = "Não foi possível carregar as categorias";
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    try {
+        $titulo = Utils::normalizarEntrada($_POST['titulo'] ?? '');
+        $texto = Utils::normalizarEntrada($_POST['texto'] ?? '');
+        $resumo = Utils::normalizarEntrada($_POST['resumo'] ?? '');
+        $destaque = Utils::normalizarEntrada($_POST['destaque'] ?? '');
+        $categoria = Utils::normalizarEntrada($_POST['categoria'] ?? '');
+
+        Validacoes::validarCategoria($categoria);
+        Validacoes::validarTitulo($titulo);
+        Validacoes::validarTexto($texto);
+        Validacoes::validarResumo($resumo);
+        Validacoes::validarDestaque($destaque);
+
+        $destaqueEnum = Destaque::from($destaque); // associando ao ENUM 
+
+
+        // Processo da imagem 
+        $nomeDaImagemEnviada = Utils::upload($_FILES['imagem']);
+
+        // Criando o objeto com os dados da nova notícia
+        $noticia = new Noticia($titulo, $texto, $resumo, $nomeDaImagemEnviada, 
+        $destaqueEnum, $idUsuario, $categoria);
+
+        $noticiaServico = new NoticiaServico();
+        $noticiaServico->inserir($noticia);
+
+        header("location:noticias.php");
+        exit;
+    } catch (InvalidArgumentException $e) {
+        $mensagemErro = $e->getMessage();
+    } catch (Throwable $e) {
+        Utils::registrarLog($e);
+        $mensagemErro = "Não foi possível cadastrar a notícia";
+    }
 }
 ?>
 
@@ -56,16 +96,16 @@ try {
             </div>
             <div class="mb-3">
                 <label class="form-label" for="titulo">Título:</label>
-                <input class="form-control" type="text" id="titulo" name="titulo" value="Título provisório da notícia">
+                <input class="form-control" type="text" id="titulo" name="titulo" value="<?= Utils::escaparHtml($titulo) ?>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="texto">Texto:</label>
-                <textarea class="form-control" name="texto" id="texto" cols="50" rows="6">Texto provisório da notícia.</textarea>
+                <textarea class="form-control" name="texto" id="texto" cols="50" rows="6"><?= Utils::escaparHtml($texto) ?></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="resumo">Resumo (máximo de 300 caracteres):</label>
                 <span id="maximo" class="badge bg-danger">0</span>
-                <textarea class="form-control" name="resumo" id="resumo" cols="50" rows="2" maxlength="300">Resumo provisório da notícia.</textarea>
+                <textarea class="form-control" name="resumo" id="resumo" cols="50" rows="2" maxlength="300"><?= Utils::escaparHtml($resumo) ?></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="imagem">Selecione uma imagem:</label>

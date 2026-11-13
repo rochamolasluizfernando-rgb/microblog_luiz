@@ -1,15 +1,5 @@
-[2026-11-10 09:56:37]
-Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\admin\categoria-exclui.php
-Linha: 13
-Mensagem: Call to a member function excluir() on null
-
-[2026-11-12 11:24:10]
-Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Services\UsuarioServico.php
-Linha: 66
-Mensagem: Microblog\Services\UsuarioServico::buscarPorId(): Argument #1 ($id) must be of type int, null given, called in C:\Users\luiz.frmolas\Desktop\microblog_luiz\admin\meu-perfil.php on line 20
-
-[2026-11-12 11:25:28]
-Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Services\UsuarioServico.php
-Linha: 66
-Mensagem: Microblog\Services\UsuarioServico::buscarPorId(): Argument #1 ($id) must be of type int, null given, called in C:\Users\luiz.frmolas\Desktop\microblog_luiz\admin\meu-perfil.php on line 20
+[2026-11-13 11:10:54]
+Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Helpers\Utils.php
+Linha: 141
+Mensagem: Call to undefined function mime_content_type()
 

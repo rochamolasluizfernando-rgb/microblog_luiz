@@ -12,29 +12,30 @@ try {
 }
 ?>
 
-<section class="mt-5" aria-labelledby="titulo-todas-noticias">
-    <h2 id="titulo-todas-noticias" class="fs-4 mb-4">Todas as notícias</h2>
+<hr class="my-5 w-50 mx-auto">
+
+<section class="row my-1" aria-labelledby="titulo-todas-noticias">
+    <div class="col-12 px-md-1">
+        <div class="list-group">
+            <h2 id="titulo-todas-noticias" class="fs-6 text-center text-muted">Todas as notícias</h2>
     <?php if ($erroTodasNoticias): ?>
-        <p class="alert alert-danger">Não foi possível carregar as notícias.</p>
+        <p class="list-group-item text-danger">Não foi possível carregar as notícias.</p>
     <?php elseif ($todasNoticias === []): ?>
-        <p class="alert alert-info">Não há notícias cadastradas.</p>
+        <p class="list-group-item text-muted">Não há notícias cadastradas.</p>
     <?php else: ?>
-        <ul class="lista-noticias">
             <?php foreach ($todasNoticias as $noticia): ?>
-                <?php $imagem = basename(str_replace('\\', '/', (string) $noticia['imagem'])); ?>
-                <li>
-                    <article class="card card-noticia shadow-sm h-100">
-                        <a href="noticia.php?id=<?= Utils::escaparHtml($noticia['id']) ?>" class="card-link">
-                            <img src="images/<?= Utils::escaparHtml($imagem) ?>"
-                                 class="card-img-top" alt="<?= Utils::escaparHtml($noticia['titulo']) ?>">
-                            <div class="card-body">
-                                <h3 class="fs-5 card-title"><?= Utils::escaparHtml($noticia['titulo']) ?></h3>
-                                <p class="card-text"><?= Utils::escaparHtml($noticia['resumo']) ?></p>
-                            </div>
-                        </a>
-                    </article>
-                </li>
+                <a href="noticia.php?id=<?= Utils::escaparHtml($noticia['id']) ?>"
+                   class="list-group-item list-group-item-action">
+                    <h3 class="fs-6">
+                        <time datetime="<?= Utils::escaparHtml($noticia['data']) ?>">
+                            <?= Utils::escaparHtml(Utils::formataData((string) $noticia['data'])) ?>
+                        </time>
+                        - <?= Utils::escaparHtml($noticia['titulo']) ?>
+                    </h3>
+                    <p class="mb-0"><?= Utils::escaparHtml($noticia['resumo']) ?></p>
+                </a>
             <?php endforeach; ?>
-        </ul>
     <?php endif; ?>
+        </div>
+    </div>
 </section>

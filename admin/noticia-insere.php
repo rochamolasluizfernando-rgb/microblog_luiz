@@ -1,5 +1,4 @@
 <?php
-
 use Microblog\Enums\Destaque;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
@@ -7,12 +6,13 @@ use Microblog\Models\Noticia;
 use Microblog\Services\CategoriaServico;
 use Microblog\Services\NoticiaServico;
 
-require_once __DIR__ .'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../includes/cabecalho-admin.php'; 
 
 // Capturando o id do usuário logado, ao qual a notícia que será inserida pertencerá
 $idUsuario = $_SESSION['id'];
 
+// Inicialização de variáveis que serão usadas ao longo dos processos da página
 $mensagemErro = '';
 $listaDeCategorias = [];
 $titulo = '';
@@ -22,7 +22,7 @@ $destaque = Destaque::NAO->value;
 $categoria = '';
 $categoriasCarregadas = false;
 
-// Carregamento das categorias 
+// Carregamento das categorias
 try {
     $categoriaServico = new CategoriaServico();
     $listaDeCategorias = $categoriaServico->listarTodos();
@@ -34,11 +34,11 @@ try {
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     try {
-        $titulo = Utils::normalizarEntrada($_POST['titulo'] ?? '');
-        $texto = Utils::normalizarEntrada($_POST['texto'] ?? '');
-        $resumo = Utils::normalizarEntrada($_POST['resumo'] ?? '');
+        $titulo = Utils::normalizarEntrada($_POST['titulo'] ?? '');    
+        $texto = Utils::normalizarEntrada($_POST['texto'] ?? '');    
+        $resumo = Utils::normalizarEntrada($_POST['resumo'] ?? '');    
         $destaque = Utils::normalizarEntrada($_POST['destaque'] ?? '');
-        $categoria = Utils::normalizarEntrada($_POST['categoria'] ?? '');
+        $categoria = Utils::normalizarEntrada($_POST['categoria'] ?? '', 'inteiro');
 
         Validacoes::validarCategoria($categoria);
         Validacoes::validarTitulo($titulo);
@@ -46,16 +46,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         Validacoes::validarResumo($resumo);
         Validacoes::validarDestaque($destaque);
 
-        $destaqueEnum = Destaque::from($destaque); // associando ao ENUM 
+        $destaqueEnum = Destaque::from($destaque); // associando ao ENUM
 
-
-        // Processo da imagem 
-        $nomeDaImagemEnviada = Utils::upload($_FILES['imagem']);
+        // Processo da imagem
+        $nomeDaImagemEnviada = Utils::upload($_FILES['imagem'] ?? null);
 
         // Criando o objeto com os dados da nova notícia
-        $noticia = new Noticia($titulo, $texto, $resumo, $nomeDaImagemEnviada, 
-        $destaqueEnum, $idUsuario, $categoria);
+        $noticia = new Noticia($titulo, $texto, $resumo, $nomeDaImagemEnviada, $destaqueEnum, $idUsuario, $categoria);
 
+        // Criando o serviço para poder inserir a nova noticia
         $noticiaServico = new NoticiaServico();
         $noticiaServico->inserir($noticia);
 
@@ -92,11 +91,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                             <?= Utils::escaparHtml($itemCategoria['nome']) ?>
                         </option>
                     <?php endforeach; ?>
+
                 </select>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="titulo">Título:</label>
-                <input class="form-control" type="text" id="titulo" name="titulo" value="<?= Utils::escaparHtml($titulo) ?>">
+                <input class="form-control" type="text" id="titulo" name="titulo" 
+                value="<?= Utils::escaparHtml($titulo) ?>">
             </div>
             <div class="mb-3">
                 <label class="form-label" for="texto">Texto:</label>
@@ -119,9 +120,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 <label class="btn btn-outline-success" for="option2">Sim</label>
             </div>
             <button class="btn btn-primary" id="inserir" name="inserir"><i class="bi bi-save"></i> Inserir</button>
-        
         </form>
         <?php endif; ?>
+
     </article>
 </div>
 

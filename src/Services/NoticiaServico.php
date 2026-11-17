@@ -1,8 +1,9 @@
-<?php 
+<?php
 namespace Microblog\Services;
 
 use Exception;
 use Microblog\Database\ConexaoBD;
+use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Models\Noticia;
 use PDO;
@@ -17,11 +18,74 @@ final class NoticiaServico
         $this->conexao = ConexaoBD::getConexao();
     }
 
+    public function listarTodos(TipoUsuario $tipoUsuario, int $usuarioId): array
+    {
+        if ($tipoUsuario === TipoUsuario::ADMIN) {
+            $sql = "SELECT noticias.id, noticias.titulo, noticias.data, noticias.destaque,
+                           usuarios.nome AS autor
+                    FROM noticias
+                    LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                    ORDER BY noticias.data DESC";
+
+            try {
+                $consulta = $this->conexao->query($sql);
+                return $consulta->fetchAll();
+            } catch (PDOException $e) {
+                Utils::registrarLog($e);
+                throw new Exception("Erro ao listar notícias");
+            }
+        }
+
+        $sql = "SELECT id, titulo, data, destaque
+                FROM noticias
+                WHERE usuario_id = :usuario_id
+                ORDER BY data DESC";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":usuario_id", $usuarioId);
+            $consulta->execute();
+            return $consulta->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias");
+        }
+    }
+
+    public function buscarPorId(int $id, TipoUsuario $tipoUsuario, int $usuarioId): ?array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.texto,
+                       noticias.resumo, noticias.imagem, noticias.destaque,
+                       noticias.usuario_id, noticias.categoria_id, usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                WHERE noticias.id = :id";
+
+        if ($tipoUsuario === TipoUsuario::EDITOR) {
+            $sql .= " AND noticias.usuario_id = :usuario_id";
+        }
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id);
+
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId);
+            }
+
+            $consulta->execute();
+            return $consulta->fetch() ?: null;
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao buscar notícia por ID.");
+        }
+    }
+
     public function inserir(Noticia $noticia): void
     {
         $sql = "INSERT INTO noticias (
             titulo, texto, resumo, imagem, destaque, usuario_id, categoria_id
-        ) VALUES (
+        ) VALUES(
             :titulo, :texto, :resumo, :imagem, :destaque, :usuario_id, :categoria_id
         )";
 
@@ -41,6 +105,6 @@ final class NoticiaServico
         } catch (PDOException $e) {
             Utils::registrarLog($e);
             throw new Exception("Erro ao inserir notícia");
-        }
+        }        
     }
 }

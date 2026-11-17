@@ -9,6 +9,7 @@ use DateTimeZone;
 
 class Utils
 {
+
     private function __construct() {}
 
     public static function normalizarEntrada(mixed $entrada, string $tipo = 'texto'): mixed
@@ -138,7 +139,7 @@ class Utils
             throw new InvalidArgumentException("A imagem deve ter no máximo 2 MB.");
         }
 
-        $formatoDoArquivoEnviado = \mime_content_type($arquivo["tmp_name"]);
+        $formatoDoArquivoEnviado = mime_content_type($arquivo["tmp_name"]);
         $extensoesPorFormato = [
             "image/jpeg" => ["jpg", "jpeg"],
             "image/gif" => ["gif"],

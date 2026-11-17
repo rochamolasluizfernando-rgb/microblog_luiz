@@ -1,5 +1,4 @@
 <?php
-
 namespace Microblog\Services;
 
 use Exception;
@@ -18,7 +17,7 @@ final class CategoriaServico
         $this->conexao = ConexaoBD::getConexao();
     }
 
-    public function listarTodos(): array
+    public function listarTodos():array
     {
         $sql = "SELECT id, nome FROM categorias ORDER BY nome";
 
@@ -62,16 +61,12 @@ final class CategoriaServico
 
     public function atualizar(Categoria $categoria): void
     {
-        $sql = "UPDATE categorias
-            SET nome = :nome
-            WHERE id = :id";
+        $sql = "UPDATE categorias SET nome = :nome WHERE id = :id";
 
         try {
             $consulta = $this->conexao->prepare($sql);
-
             $consulta->bindValue(":nome", $categoria->getNome());
-            $consulta->bindValue(":id", $categoria->getId(), PDO::PARAM_INT);
-
+            $consulta->bindValue(":id", $categoria->getId());
             $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
@@ -79,17 +74,17 @@ final class CategoriaServico
         }
     }
 
-    public function excluir(int $id):void 
+    public function excluir(int $id):void
     {
         $sql = "DELETE FROM categorias WHERE id = :id";
-
+        
         try {
             $consulta = $this->conexao->prepare($sql);
             $consulta->bindValue(":id", $id);
             $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
-            throw new Exception("Erro ao excluir usuário");
+            throw new Exception("Erro ao excluir categoria");
         }
     }
 }

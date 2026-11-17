@@ -1,11 +1,11 @@
 <?php
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
-use Microblog\Auth\ControleDeAcesso;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -15,7 +15,7 @@ $mensagemErro = "";
 $dadosUsuario = null;
 $usuarioServico = null;
 
-// Capturando o id do usuário logado na sessão 
+// Capturando o id do usuário logado na sessão
 $id = Utils::normalizarEntrada($_SESSION['id'] ?? null, 'inteiro');
 
 try {
@@ -26,6 +26,7 @@ try {
     $mensagemErro = "Não foi possível carregar os dados do meu perfil";
 }
 
+
 if ($dadosUsuario === null && $mensagemErro === "") {
     Utils::alertaErro("Usuário não encontrado!");
 }
@@ -33,12 +34,12 @@ if ($dadosUsuario === null && $mensagemErro === "") {
 $nome = $dadosUsuario['nome'] ?? "";
 $email = $dadosUsuario['email'] ?? "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if($_SERVER["REQUEST_METHOD"] === "POST"){
     try {
         $nome = Utils::normalizarEntrada($_POST['nome'] ?? "");
-        $email = Utils::normalizarEntrada($_POST['email'] ?? "");
-
-        // O tipo do usuário não é capturado do formulário 
+        $email = Utils::normalizarEntrada($_POST['email'] ?? "", 'email');
+        
+        // O tipo do usuário não é capturado do formulário
         // Usamos o valor atual do banco (ou da SESSION)
         $tipoEnum = TipoUsuario::from($dadosUsuario['tipo']); // ou $_SESSION['tipo']
 
@@ -46,8 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         Validacoes::validarEmail($email);
 
         $senhaBruta = $_POST['senha'] ?? '';
-
-        if ($senhaBruta === "") {
+        if($senhaBruta === ""){
             $senha = $dadosUsuario['senha'];
         } else {
             Validacoes::validarSenha($senhaBruta);
@@ -64,17 +64,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     } catch (InvalidArgumentException $e) {
         $mensagemErro = $e->getMessage();
-    } catch (Throwable $e) {
+    } catch (Throwable $e){ 
         Utils::registrarLog($e);
         $mensagemErro = "Não foi possível atualizar o usuário. Tente novamente";
     }
 }
 
-require_once __DIR__ . '/../includes/cabecalho-admin.php'; ?>
+require_once __DIR__ . '/../includes/cabecalho-admin.php';
+?>
 
 <div class="row">
     <article class="col-12 bg-white rounded shadow my-1 py-4">
         <h2 class="text-center">Atualizar meus dados</h2>
+
+        <?php if ($mensagemErro !== ""): ?>
+            <div class="alert alert-danger text-center">
+                <?= Utils::escaparHtml($mensagemErro) ?>
+            </div>
+        <?php endif; ?>
+
         <form class="mx-auto w-75" action="" method="post" id="form-atualizar" name="form-atualizar">
             <div class="mb-3">
                 <label class="form-label" for="nome">Nome:</label>

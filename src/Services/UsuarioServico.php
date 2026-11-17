@@ -13,10 +13,10 @@ final class UsuarioServico
     private PDO $conexao;
 
     /* Ao criar um objeto UsuarioServico,
-    o construtor fica responsável por chamar/executar 
+    o construtor fica responsável por chamar/executar
     a conexão com o banco de dados 
-    (proveniente do método estático getConexao).
-    Os dados da conexão ficarão guardados na propriedade conexão. */
+    (proveniente do método estático getConexao). 
+    Os dados da conexão ficarão guardados na propriedade conexao. */
     public function __construct()
     {
         $this->conexao = ConexaoBD::getConexao();
@@ -24,17 +24,17 @@ final class UsuarioServico
 
     public function listarTodos():array
     {
-        $sql = "SELECT id, nome, email, tipo FROM usuarios ORDER BY nome";   
-        
+        $sql = "SELECT id, nome, email, tipo FROM usuarios ORDER BY nome";
+
         try {
             $consulta = $this->conexao->query($sql);
             return $consulta->fetchAll();
         } catch (PDOException $e) {
-            // Registrar/logar os detalhes do erro em logs/erro
+            // Registrar/logar os detalhes do erro em logs/erro.log
             Utils::registrarLog($e);
 
             // Lançando uma mensagem de erro amigável (sem detalhes)
-            // Essa mensagem será posteriormente capturada e exibida no Front-End 
+            // Essa mensagem será posteriormente capturada e exibida no Front-End
             throw new Exception("Erro ao listar usuários");
         }
     }
@@ -55,7 +55,7 @@ final class UsuarioServico
             $consulta->bindValue(":email", $usuario->getEmail());
             $consulta->bindValue(":senha", $usuario->getSenha());
             $consulta->bindValue(":tipo", $usuario->getTipoUsuario()->value);
-            
+
             $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
@@ -74,9 +74,9 @@ final class UsuarioServico
 
             // Ternário conciso/abreviado (se fetch for TRUE, retorna ele mesmo; senão null)
             return $consulta->fetch() ?: null;
-
             
-
+            // Usando ternário tradicional (faz a mesma coisa)
+            // return $consulta->fetch() ? $consulta->fetch() : null; 
         } catch (PDOException $e) {
             Utils::registrarLog($e);
             throw new Exception("Erro ao buscar usuário por ID.");
@@ -86,7 +86,8 @@ final class UsuarioServico
     public function atualizar(Usuario $usuario): void
     {
         $sql = "UPDATE usuarios 
-            SET nome = :nome, email = :email, senha = :senha, tipo = :tipo WHERE id = :id";
+                    SET nome = :nome, email = :email, senha = :senha, tipo = :tipo
+                    WHERE id = :id";
 
         try {
             $consulta = $this->conexao->prepare($sql);
@@ -102,17 +103,17 @@ final class UsuarioServico
         }
     }
 
-    public function excluir(int $id):void 
+    public function excluir(int $id):void
     {
         $sql = "DELETE FROM usuarios WHERE id = :id";
-
+        
         try {
             $consulta = $this->conexao->prepare($sql);
             $consulta->bindValue(":id", $id);
             $consulta->execute();
         } catch (PDOException $e) {
             Utils::registrarLog($e);
-            throw new Exception("Erro ao excluir categoria");
+            throw new Exception("Erro ao excluir usuário");
         }
     }
 

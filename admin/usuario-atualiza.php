@@ -1,22 +1,22 @@
 <?php
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
-use Microblog\Auth\ControleDeAcesso;
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php'; 
 
 ControleDeAcesso::exigirAdmin();
 
-// Inicializar variáveis para mensagem de erro e dados do usuário 
+// Inicializar variáveis para mensagem de erro e dados do usuário
 $mensagemErro = "";
 $dadosUsuario = null;
 $usuarioServico = null;
 
-// Normaliza o valor do id recebido via parâmetro de URL 
+// Normaliza o valor do id recebido via parâmetro de URL
 $id = Utils::normalizarEntrada($_GET['id'] ?? null, 'inteiro');
 
 // Verificação do valor do id (se for inválido, vai redirecionar index)
@@ -36,22 +36,17 @@ if($dadosUsuario === null && $mensagemErro === ""){
     Utils::alertaErro("Usuário não encontrado!");
 }
 
-/* Inicializa variáveies para armazenar os valores do formulário,
+/* Inicializa variáveis para armazenar os valores do formulário,
 usando os dados do usuário (se disponíveis) */
 $nome = $dadosUsuario['nome'] ?? "";
 $email = $dadosUsuario['email'] ?? "";
 $tipo = $dadosUsuario['tipo'] ?? "";
 
-// Utils::dump($dadosUsuario);
-// Utils::dump($nome);
-// Utils::dump($email);
-// Utils::dump($tipo);
- 
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     try {
         // Captura e normaliza os dados do formulário
         $nome = Utils::normalizarEntrada($_POST['nome'] ?? "");
-        $email = Utils::normalizarEntrada($_POST['email'] ?? "");
+        $email = Utils::normalizarEntrada($_POST['email'] ?? "", 'email');
         $tipo = Utils::normalizarEntrada($_POST['tipo'] ?? "");
 
         // Valida os dados e associa o tipo à Enumeração
@@ -73,30 +68,37 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
             $senha = Utils::verificarSenha($senhaBruta, $dadosUsuario['senha']);
         }
 
-        // Criando um objeto com os dados do usuário visando a atualização no banco 
+        // Criando um objeto com os dados do usuario visando a atualização no banco
         $usuario = new Usuario($nome, $email, $senha, $tipoEnum, $id);
 
-        // Chamamos o serviço responsável por atualizar o usuário 
+        // Chamamos o serviço responsável por atualizar o usuario
         $usuarioServico->atualizar($usuario);
 
-        // Se tudo der certo, redirecionamos: 
+        // Se tudo der certo, redirecionamos:
         header("location:usuarios.php");
         exit;
 
-    } catch (InvalidArgumentException $e) { // se validações falharem 
+    } catch (InvalidArgumentException $e) { // se validações falharem
         $mensagemErro = $e->getMessage();
-    } catch (Throwable $e){ // se qualquer outro erro/exceção acontecer 
+    } catch (Throwable $e){ // se qualquer outro erro/exceção acontecer
         Utils::registrarLog($e);
         $mensagemErro = "Não foi possível atualizar o usuário. Tente novamente";
     }
 }
 
-
-require_once __DIR__ . '/../includes/cabecalho-admin.php'; ?>
+require_once __DIR__ . '/../includes/cabecalho-admin.php'; 
+?>
 
 <div class="row">
     <article class="col-12 bg-white rounded shadow my-1 py-4">
         <h2 class="text-center">Atualizar dados do usuário</h2>
+
+        <?php if($mensagemErro !== ""): ?>
+            <div class="alert alert-danger text-center">
+                <?= Utils::escaparHtml($mensagemErro) ?>
+            </div>
+        <?php endif; ?>
+
         <form class="mx-auto w-75" action="" method="post" id="form-atualizar" name="form-atualizar">
             <div class="mb-3">
                 <label class="form-label" for="nome">Nome:</label>
@@ -115,12 +117,13 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php'; ?>
             <div class="mb-3">
                 <label class="form-label" for="tipo">Tipo:</label>
                 <select class="form-select" name="tipo" id="tipo">
-
+                    
                     <option value="editor" <?php if($tipo === 'editor') echo 'selected' ?>>
                         Editor</option>
-
-                    <option value="admin"<?php if($tipo === 'admin') echo 'selected' ?>>
+                    
+                    <option value="admin" <?php if($tipo === 'admin') echo 'selected' ?>>
                         Administrador</option>
+
                 </select>
             </div>
             <button class="btn btn-primary" name="atualizar"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>

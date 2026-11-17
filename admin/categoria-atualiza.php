@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__ . '/../includes/cabecalho-admin.php';
-require_once __DIR__ . '/../vendor/autoload.php';
 
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Categoria;
 use Microblog\Services\CategoriaServico;
-use Microblog\Auth\ControleDeAcesso;
+
+require_once __DIR__ . '/../vendor/autoload.php'; 
 
 ControleDeAcesso::exigirAdmin();
 
@@ -20,18 +20,18 @@ Utils::verificarId($id);
 try {
     $categoriaServico = new CategoriaServico();
     $dadosCategoria = $categoriaServico->buscarPorId($id);
-} catch (Throwable $e) {
+} catch(Throwable $e){
     Utils::registrarLog($e);
-    $mensagemErro = "Não foi possível carregar os dados da categoria.";
+    $mensagemErro = "Não foi possível carregar os dados da categoria";
 }
 
-if ($dadosCategoria === null && $mensagemErro === "") {
+if($dadosCategoria === null && $mensagemErro === ""){
     Utils::alertaErro("Categoria não encontrada!");
 }
 
 $nome = $dadosCategoria['nome'] ?? "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if($_SERVER["REQUEST_METHOD"] === "POST"){
     try {
         $nome = Utils::normalizarEntrada($_POST['nome'] ?? "");
         Validacoes::validarNome($nome);
@@ -39,20 +39,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $categoria = new Categoria($nome, $id);
         $categoriaServico->atualizar($categoria);
 
-        header("Location: categorias.php");
+        header("location:categorias.php");
         exit;
-    } catch (Throwable $e) {
+    } catch (InvalidArgumentException $e) { 
+        $mensagemErro = $e->getMessage();
+    } catch (Throwable $e){ 
         Utils::registrarLog($e);
-        $mensagemErro = "Não foi possível atualizar a categoria. Tente novamente.";
+        $mensagemErro = "Não foi possível atualizar a categoria. Tente novamente";
     }
 }
+
+
+require_once __DIR__ . '/../includes/cabecalho-admin.php'; 
 ?>
 
 <div class="row">
     <article class="col-12 bg-white rounded shadow my-1 py-4">
         <h2 class="text-center">Atualizar dados da categoria</h2>
 
-        <?php if ($mensagemErro !== "") : ?>
+        <?php if($mensagemErro !== ""): ?>
             <div class="alert alert-danger text-center">
                 <?= Utils::escaparHtml($mensagemErro) ?>
             </div>
@@ -61,22 +66,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <form class="mx-auto w-75" action="" method="post" id="form-atualizar" name="form-atualizar">
             <div class="mb-3">
                 <label class="form-label" for="nome">Nome:</label>
-                <input
-                    value="<?= Utils::escaparHtml($nome) ?>"
-                    class="form-control"
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    required>
+                <input value="<?= Utils::escaparHtml($nome) ?>" class="form-control" type="text" id="nome" name="nome">
             </div>
-
-            <button class="btn btn-primary" name="atualizar">
-                <i class="bi bi-arrow-clockwise"></i> Atualizar
-            </button>
+            <button class="btn btn-primary" name="atualizar"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>
         </form>
     </article>
 </div>
 
-<?php
-require_once __DIR__ . '/../includes/rodape-admin.php';
-?>
+<?php require_once __DIR__ . '/../includes/rodape-admin.php'; ?>

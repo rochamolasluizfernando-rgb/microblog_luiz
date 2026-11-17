@@ -81,7 +81,7 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php';
                                     </a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-danger excluir btn-sm" href="noticia-exclui.php?id=<?= Utils::escaparHtml($itemNoticia['id']) ?>">
+                                    <a class="btn btn-danger btn-sm" href="noticia-exclui.php?id=<?= Utils::escaparHtml($itemNoticia['id']) ?>">
                                         <i class="bi bi-trash"></i> Excluir
                                     </a>
                                 </td>
@@ -94,5 +94,4 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php';
     </article>
 </div>
 
-<script src="js/confirm.js"></script>
 <?php require_once __DIR__ . '/../includes/rodape-admin.php'; ?>

@@ -17,3 +17,32 @@
 }
 
 .ajusta-texto { white-space: pre-wrap; }
+
+.lista-noticias {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.card-noticia {
+    min-width: 0;
+}
+
+.card-noticia img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.noticia-completa .imagem-noticia-completa {
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 600px) {
+    .lista-noticias {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

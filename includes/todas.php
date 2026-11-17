@@ -1,18 +1,40 @@
-<hr class="my-5 w-50 mx-auto">
+<?php
+use Microblog\Helpers\Utils;
+use Microblog\Services\NoticiaServico;
 
-<div class="row my-1">
-    <div class="col-12 px-md-1">
-        <div class="list-group">
-            <h2 class="fs-6 text-center text-muted">Todas as notícias</h2>
+$todasNoticias = [];
+$erroTodasNoticias = false;
 
-            <a href="noticia.php?id=1" class="list-group-item list-group-item-action">
-                <h3 class="fs-6"><time datetime="2026-01-01">01/01/2026</time> - Título provisório da notícia</h3>
-                <p>Resumo provisório para apresentar o formato da lista.</p>
-            </a>
-            <a href="noticia.php?id=2" class="list-group-item list-group-item-action">
-                <h3 class="fs-6"><time datetime="2026-01-02">02/01/2026</time> - Outro título provisório</h3>
-                <p>Outro resumo provisório para apresentar o formato da lista.</p>
-            </a>
-        </div>
-    </div>
-</div>
+try {
+    $todasNoticias = (new NoticiaServico())->listarPublicas();
+} catch (Exception $e) {
+    $erroTodasNoticias = true;
+}
+?>
+
+<section class="mt-5" aria-labelledby="titulo-todas-noticias">
+    <h2 id="titulo-todas-noticias" class="fs-4 mb-4">Todas as notícias</h2>
+    <?php if ($erroTodasNoticias): ?>
+        <p class="alert alert-danger">Não foi possível carregar as notícias.</p>
+    <?php elseif ($todasNoticias === []): ?>
+        <p class="alert alert-info">Não há notícias cadastradas.</p>
+    <?php else: ?>
+        <ul class="lista-noticias">
+            <?php foreach ($todasNoticias as $noticia): ?>
+                <?php $imagem = basename(str_replace('\\', '/', (string) $noticia['imagem'])); ?>
+                <li>
+                    <article class="card card-noticia shadow-sm h-100">
+                        <a href="noticia.php?id=<?= Utils::escaparHtml($noticia['id']) ?>" class="card-link">
+                            <img src="images/<?= Utils::escaparHtml($imagem) ?>"
+                                 class="card-img-top" alt="<?= Utils::escaparHtml($noticia['titulo']) ?>">
+                            <div class="card-body">
+                                <h3 class="fs-5 card-title"><?= Utils::escaparHtml($noticia['titulo']) ?></h3>
+                                <p class="card-text"><?= Utils::escaparHtml($noticia['resumo']) ?></p>
+                            </div>
+                        </a>
+                    </article>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</section>

@@ -19,7 +19,10 @@ final class CategoriaServico
 
     public function listarTodos():array
     {
-        $sql = "SELECT id, nome FROM categorias ORDER BY nome";
+        $sql = "SELECT MIN(id) AS id, nome
+                FROM categorias
+                GROUP BY nome
+                ORDER BY nome";
 
         try {
             $consulta = $this->conexao->query($sql);

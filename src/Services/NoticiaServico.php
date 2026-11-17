@@ -107,4 +107,63 @@ final class NoticiaServico
             throw new Exception("Erro ao inserir notícia");
         }        
     }
+
+    public function atualizar(int $id, Noticia $noticia, TipoUsuario $tipoUsuario, int $usuarioId): bool
+    {
+        try {
+            $this->conexao->beginTransaction();
+
+            $sql = "SELECT id FROM noticias WHERE id = :id";
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $sql .= " AND usuario_id = :usuario_id";
+            }
+            $sql .= " FOR UPDATE";
+
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id);
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId);
+            }
+            $consulta->execute();
+
+            if (!$consulta->fetch()) {
+                $this->conexao->commit();
+                return false;
+            }
+
+            $sql = "UPDATE noticias
+                    SET titulo = :titulo,
+                        texto = :texto,
+                        resumo = :resumo,
+                        imagem = :imagem,
+                        destaque = :destaque,
+                        categoria_id = :categoria_id
+                    WHERE id = :id";
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $sql .= " AND usuario_id = :usuario_id";
+            }
+
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":titulo", $noticia->getTitulo());
+            $consulta->bindValue(":texto", $noticia->getTexto());
+            $consulta->bindValue(":resumo", $noticia->getResumo());
+            $consulta->bindValue(":imagem", $noticia->getImagem());
+            $consulta->bindValue(":destaque", $noticia->getDestaque()->value);
+            $consulta->bindValue(":categoria_id", $noticia->getCategoriaId());
+            $consulta->bindValue(":id", $id);
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId);
+            }
+            $consulta->execute();
+
+            $this->conexao->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($this->conexao->inTransaction()) {
+                $this->conexao->rollBack();
+            }
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao atualizar notícia");
+        }
+    }
 }

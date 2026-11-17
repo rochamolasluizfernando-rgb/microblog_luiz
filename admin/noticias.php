@@ -10,6 +10,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 ControleDeAcesso::exigirLogin();
 
 $mensagemErro = "";
+$mensagemSucesso = $_SESSION['mensagemSucesso'] ?? "";
+unset($_SESSION['mensagemSucesso']);
 $listaDeNoticias = [];
 $ehAdmin = false;
 
@@ -36,6 +38,11 @@ require_once __DIR__ . '/../includes/cabecalho-admin.php';
         <?php if ($mensagemErro !== ""): ?>
             <div class="alert alert-danger text-center">
                 <?= Utils::escaparHtml($mensagemErro) ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($mensagemSucesso !== ""): ?>
+            <div class="alert alert-success text-center">
+                <?= Utils::escaparHtml($mensagemSucesso) ?>
             </div>
         <?php endif; ?>
 

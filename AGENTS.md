@@ -121,9 +121,9 @@ As páginas públicas ficam na raiz: `index.php`, `noticia.php`,
   informada já corresponde ao hash atual.
 - `Utils::upload()` recebe a entrada de `$_FILES`, exige upload válido, limita
   o arquivo a 2 MB, verifica MIME e extensão (JPEG, GIF, PNG ou WebP), limita
-  o nome a 60 caracteres e salva em `images/`. Atualmente usa o nome original
-  e pode sobrescrever um arquivo de mesmo nome; considere esse comportamento
-  ao alterar o fluxo.
+  o nome a 60 caracteres e salva em `images/`. Remove componentes de caminho do
+  nome informado e gera um sufixo aleatório se já existir um arquivo com o
+  mesmo nome, evitando sobrescrita.
 
 ### Acesso administrativo
 
@@ -147,14 +147,17 @@ As páginas públicas ficam na raiz: `index.php`, `noticia.php`,
   que retorna todas as notícias com autor para admin e apenas as do usuário
   informado para editor; `buscarPorId()`, que carrega os dados e o autor da
   notícia, permite qualquer notícia para admin e restringe editor às notícias
-  próprias; e `inserir(Noticia $noticia)`. Atualização e exclusão de notícias
-  ainda não estão implementadas no serviço.
+  próprias; `inserir(Noticia $noticia)`; e `atualizar()`, que atualiza os campos
+  editáveis, confirma a existência/autoria dentro de uma transação e retorna
+  `false` quando a notícia não existe ou o editor não pode alterá-la.
 - `admin/noticia-insere.php` integra categorias, validação, upload e inserção.
 - `admin/noticia-atualiza.php` recebe o ID por `GET` (o link em
   `admin/noticias.php` usa `noticia-atualiza.php?id=...`), exige login e carrega
   a notícia de acordo com o perfil. Exibe os campos, a imagem atual e todas as
   categorias, deixando selecionada a categoria associada à notícia. O formulário
-  ainda não processa nem persiste a atualização e seu botão está desabilitado.
+  valida os campos, mantém a imagem atual quando não há novo upload e persiste
+  título, texto, resumo, imagem, destaque e categoria. A data de publicação e o
+  autor são preservados. Após sucesso, redireciona à lista e exibe uma mensagem.
 - `admin/noticia-exclui.php` ainda é uma página provisória.
 - As páginas públicas (`index.php`, `noticia.php`,
   `noticias-por-categoria.php` e `resultados.php`) e alguns conteúdos de

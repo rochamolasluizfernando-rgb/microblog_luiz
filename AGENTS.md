@@ -164,11 +164,11 @@ As páginas públicas ficam na raiz: `index.php`, `noticia.php`,
 - `admin/noticia-exclui.php` exibe os dados da notícia e exige confirmação
   explícita em POST protegido por token CSRF antes de excluir. Admin pode
   excluir qualquer notícia; editor só pode excluir as próprias.
-- As páginas públicas (`index.php`, `noticia.php`,
-  `noticias-por-categoria.php` e `resultados.php`) e alguns conteúdos de
-  navegação/listagem ainda contêm dados ou marcação provisórios estáticos.
-  Confira a implementação atual antes de assumir que o README descreve
-  funcionalidades dinâmicas já concluídas.
+- As páginas públicas `index.php`, `noticia.php` e
+  `noticias-por-categoria.php` consultam notícias e categorias dinamicamente
+  por meio dos serviços. `includes/cabecalho.php` monta o menu de categorias;
+  `includes/todas.php` lista notícias públicas em cards. `resultados.php`
+  continua sendo apenas a resposta estática provisória da busca.
 
 ## Orientações para alterações
 

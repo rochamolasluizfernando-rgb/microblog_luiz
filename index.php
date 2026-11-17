@@ -22,10 +22,10 @@ try {
     <?php elseif ($destaques === []): ?>
         <p class="alert alert-info">Não há notícias em destaque cadastradas.</p>
     <?php else: ?>
-        <ul class="lista-noticias">
+        <div class="row my-1 mx-md-n1">
             <?php foreach ($destaques as $noticia): ?>
                 <?php $imagem = basename(str_replace('\\', '/', (string) $noticia['imagem'])); ?>
-                <li>
+                <div class="col-md-6 my-1 px-md-1">
                     <article class="card card-noticia shadow-sm h-100">
                         <a href="noticia.php?id=<?= Utils::escaparHtml($noticia['id']) ?>" class="card-link">
                             <img src="images/<?= Utils::escaparHtml($imagem) ?>"
@@ -36,9 +36,9 @@ try {
                             </div>
                         </a>
                     </article>
-                </li>
+                </div>
             <?php endforeach; ?>
-        </ul>
+        </div>
     <?php endif; ?>
 </section>
 

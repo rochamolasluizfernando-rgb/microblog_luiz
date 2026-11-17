@@ -20,6 +20,69 @@ final class NoticiaServico
         $this->conexao = ConexaoBD::getConexao();
     }
 
+    public function listarDestaques(): array
+    {
+        $sql = "SELECT id, titulo, resumo, imagem
+                FROM noticias
+                WHERE destaque = :destaque
+                ORDER BY data DESC";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":destaque", "sim");
+            $consulta->execute();
+            return $consulta->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias em destaque");
+        }
+    }
+
+    public function listarPublicas(?int $categoriaId = null): array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.resumo,
+                       noticias.imagem, usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id";
+
+        if ($categoriaId !== null) {
+            $sql .= " WHERE noticias.categoria_id = :categoria_id";
+        }
+
+        $sql .= " ORDER BY noticias.data DESC";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            if ($categoriaId !== null) {
+                $consulta->bindValue(":categoria_id", $categoriaId, PDO::PARAM_INT);
+            }
+            $consulta->execute();
+            return $consulta->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias públicas");
+        }
+    }
+
+    public function buscarPublicaPorId(int $id): ?array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.texto,
+                       noticias.resumo, noticias.imagem, usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                WHERE noticias.id = :id";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetch() ?: null;
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao buscar notícia pública");
+        }
+    }
+
     public function listarTodos(TipoUsuario $tipoUsuario, int $usuarioId): array
     {
         if ($tipoUsuario === TipoUsuario::ADMIN) {

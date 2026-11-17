@@ -46,6 +46,76 @@ final class NoticiaServico
         }
     }
 
+    public function listarDestaques(): array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.resumo, noticias.imagem,
+                    usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                WHERE noticias.destaque = 'sim'
+                ORDER BY noticias.data DESC, noticias.id DESC";
+
+        try {
+            return $this->conexao->query($sql)->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias em destaque");
+        }
+    }
+
+    public function listarPublicas(): array
+    {
+        $sql = "SELECT id, data, titulo, resumo
+                FROM noticias
+                ORDER BY data DESC, id DESC";
+
+        try {
+            return $this->conexao->query($sql)->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias");
+        }
+    }
+
+    public function buscarPublicaPorId(int $id): ?array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.texto, noticias.imagem,
+                    usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                WHERE noticias.id = :id";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetch() ?: null;
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao buscar notícia");
+        }
+    }
+
+    public function listarPublicasPorCategoria(int $categoriaId): array
+    {
+        $sql = "SELECT noticias.id, noticias.data, noticias.titulo, noticias.resumo,
+                    usuarios.nome AS autor
+                FROM noticias
+                LEFT JOIN usuarios ON noticias.usuario_id = usuarios.id
+                WHERE noticias.categoria_id = :categoria_id
+                ORDER BY noticias.data DESC, noticias.id DESC";
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":categoria_id", $categoriaId, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetchAll();
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao listar notícias da categoria");
+        }
+    }
+
     public function inserir(Noticia $noticia): void
     {
         $sql = "INSERT INTO noticias (

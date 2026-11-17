@@ -6,8 +6,10 @@ use Microblog\Database\ConexaoBD;
 use Microblog\Enums\TipoUsuario;
 use Microblog\Helpers\Utils;
 use Microblog\Models\Noticia;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
+use RuntimeException;
 
 final class NoticiaServico
 {
@@ -165,5 +167,89 @@ final class NoticiaServico
             Utils::registrarLog($e);
             throw new Exception("Erro ao atualizar notícia");
         }
+    }
+
+    public function excluir(int $id, TipoUsuario $tipoUsuario, int $usuarioId): bool
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException("O ID da notícia deve ser positivo.");
+        }
+
+        try {
+            $this->conexao->beginTransaction();
+
+            $sql = "SELECT imagem FROM noticias WHERE id = :id";
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $sql .= " AND usuario_id = :usuario_id";
+            }
+            $sql .= " FOR UPDATE";
+
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId, PDO::PARAM_INT);
+            }
+            $consulta->execute();
+            $noticia = $consulta->fetch();
+
+            if (!$noticia) {
+                $this->conexao->commit();
+                return false;
+            }
+
+            $sql = "DELETE FROM noticias WHERE id = :id";
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $sql .= " AND usuario_id = :usuario_id";
+            }
+
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId, PDO::PARAM_INT);
+            }
+            $consulta->execute();
+
+            if ($consulta->rowCount() !== 1) {
+                $this->conexao->commit();
+                return false;
+            }
+
+            $consulta = $this->conexao->prepare(
+                "SELECT COUNT(*) FROM noticias WHERE imagem = :imagem"
+            );
+            $consulta->bindValue(":imagem", $noticia['imagem']);
+            $consulta->execute();
+            $imagemAindaUtilizada = (int) $consulta->fetchColumn() > 0;
+
+            $this->conexao->commit();
+        } catch (PDOException $e) {
+            if ($this->conexao->inTransaction()) {
+                $this->conexao->rollBack();
+            }
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao excluir notícia");
+        } catch (\Throwable $e) {
+            if ($this->conexao->inTransaction()) {
+                $this->conexao->rollBack();
+            }
+            throw $e;
+        }
+
+        $nomeImagem = $noticia['imagem'];
+        if (
+            !$imagemAindaUtilizada &&
+            is_string($nomeImagem) &&
+            $nomeImagem !== '' &&
+            basename(str_replace('\\', '/', $nomeImagem)) === $nomeImagem
+        ) {
+            $caminhoImagem = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR .
+                'images' . DIRECTORY_SEPARATOR . $nomeImagem;
+
+            if (is_file($caminhoImagem) && !unlink($caminhoImagem)) {
+                Utils::registrarLog(new RuntimeException("Não foi possível remover a imagem órfã da notícia."));
+            }
+        }
+
+        return true;
     }
 }

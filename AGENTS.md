@@ -147,9 +147,12 @@ As páginas públicas ficam na raiz: `index.php`, `noticia.php`,
   que retorna todas as notícias com autor para admin e apenas as do usuário
   informado para editor; `buscarPorId()`, que carrega os dados e o autor da
   notícia, permite qualquer notícia para admin e restringe editor às notícias
-  próprias; `inserir(Noticia $noticia)`; e `atualizar()`, que atualiza os campos
+  próprias; `inserir(Noticia $noticia)`; `atualizar()`, que atualiza os campos
   editáveis, confirma a existência/autoria dentro de uma transação e retorna
-  `false` quando a notícia não existe ou o editor não pode alterá-la.
+  `false` quando a notícia não existe ou o editor não pode alterá-la; e
+  `excluir()`, que valida o ID, aplica as mesmas regras de autoria, apaga a
+  notícia em transação e remove a imagem apenas quando nenhum outro registro
+  ainda a utiliza.
 - `admin/noticia-insere.php` integra categorias, validação, upload e inserção.
 - `admin/noticia-atualiza.php` recebe o ID por `GET` (o link em
   `admin/noticias.php` usa `noticia-atualiza.php?id=...`), exige login e carrega
@@ -158,7 +161,9 @@ As páginas públicas ficam na raiz: `index.php`, `noticia.php`,
   valida os campos, mantém a imagem atual quando não há novo upload e persiste
   título, texto, resumo, imagem, destaque e categoria. A data de publicação e o
   autor são preservados. Após sucesso, redireciona à lista e exibe uma mensagem.
-- `admin/noticia-exclui.php` ainda é uma página provisória.
+- `admin/noticia-exclui.php` exibe os dados da notícia e exige confirmação
+  explícita em POST protegido por token CSRF antes de excluir. Admin pode
+  excluir qualquer notícia; editor só pode excluir as próprias.
 - As páginas públicas (`index.php`, `noticia.php`,
   `noticias-por-categoria.php` e `resultados.php`) e alguns conteúdos de
   navegação/listagem ainda contêm dados ou marcação provisórios estáticos.

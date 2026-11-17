@@ -1,5 +1,0 @@
-[2026-11-13 11:10:54]
-Arquivo: C:\Users\luiz.frmolas\Desktop\microblog_luiz\src\Helpers\Utils.php
-Linha: 141
-Mensagem: Call to undefined function mime_content_type()
-

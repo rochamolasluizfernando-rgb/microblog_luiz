@@ -41,7 +41,7 @@
     height: auto;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     .lista-noticias {
         grid-template-columns: minmax(0, 1fr);
     }

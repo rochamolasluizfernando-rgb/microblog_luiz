@@ -13,10 +13,10 @@ final class ConexaoBD
     private function __construct() {}
 
     private static PDO $conexao;
-    private static string $servidor = "localhost";
-    private static string $usuario = "root";
-    private static string $senha = "senacpenha";
-    private static string $banco = "microblog_2026";
+    private static string $servidor = "sql307.infinityfree.com";
+    private static string $usuario = "if0_43472893";
+    private static string $senha = "2OYfn6HRgolGzyw";
+    private static string $banco = "if0_43472893_microblog";
 
     public static function getConexao(): PDO
     {
@@ -40,7 +40,7 @@ final class ConexaoBD
                     0, // Código de erro genérico que não revela detalhes sensíveis
                     $e // Exceção original como causa
                 );
-            } 
+            }
         }
 
         return self::$conexao;

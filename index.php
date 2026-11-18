@@ -12,7 +12,7 @@ try {
     $servicoNoticia = new NoticiaServico();
     $destaques = $servicoNoticia->listarDestaques();
 } catch (Exception $e) {
-    $mensagemErro = 'Não foi possível carregar as notícias em destaque.';
+    die($e->getMessage());
 }
 ?>
 

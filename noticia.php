@@ -1,20 +1,57 @@
-<?php require_once __DIR__ . '/includes/cabecalho.php'; ?>
+<?php
+use Microblog\Helpers\Utils;
+use Microblog\Services\NoticiaServico;
 
-<div class="row my-1 mx-md-n1">
+require_once __DIR__ . '/includes/cabecalho.php';
 
-    <article class="col-12">
-        <h2>Título provisório da notícia</h2>
-        <p class="font-weight-light">
-            <time datetime="2026-01-01">01/01/2026</time> -
-            <span>Nome do autor</span>
+$valorId = $_GET['id'] ?? null;
+$id = filter_var($valorId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$noticia = null;
+$mensagemErro = '';
+
+if ($id === false) {
+    http_response_code(400);
+} else {
+    try {
+        $noticia = (new NoticiaServico())->buscarPublicaPorId($id);
+        if ($noticia === null) {
+            http_response_code(404);
+        }
+    } catch (Exception $e) {
+        $mensagemErro = 'Não foi possível carregar a notícia.';
+    }
+}
+?>
+
+<?php if ($id === false): ?>
+    <p class="alert alert-warning">Identificador de notícia inválido.</p>
+<?php elseif ($mensagemErro !== ''): ?>
+    <p class="alert alert-danger"><?= Utils::escaparHtml($mensagemErro) ?></p>
+<?php elseif ($noticia === null): ?>
+    <p class="alert alert-info">Notícia não encontrada.</p>
+<?php else: ?>
+    <?php
+    $imagem = basename(str_replace('\\', '/', (string) $noticia['imagem']));
+    $dataPublicacao = strtotime((string) $noticia['data']);
+    $dataFormatada = date('d/m/Y', $dataPublicacao);
+    $dataIso = date('Y-m-d', $dataPublicacao);
+    $autor = $noticia['autor'] ?: 'Equipe Microblog';
+    ?>
+    <article class="noticia-completa">
+        <h2><?= Utils::escaparHtml($noticia['titulo']) ?></h2>
+        <p class="text-muted">
+            <time datetime="<?= Utils::escaparHtml($dataIso) ?>"><?= Utils::escaparHtml($dataFormatada) ?></time>
+            - <?= Utils::escaparHtml($autor) ?>
         </p>
-        <img src="images/conversa.jpg" alt="" class="float-start pe-2 img-fluid">
-        <p class="ajusta-texto">Este é um texto provisório. Mais tarde, o conteúdo será carregado dinamicamente a partir do banco de dados.</p>
+        <img src="images/<?= Utils::escaparHtml($imagem) ?>"
+             alt="<?= Utils::escaparHtml($noticia['titulo']) ?>" class="img-fluid imagem-noticia-completa">
+        <div class="ajusta-texto mt-3"><?= Utils::escaparHtml($noticia['texto']) ?></div>
     </article>
-    
-</div>
+<?php endif; ?>
 
 <?php
-require_once __DIR__ . '/includes/todas.php';
+if ($id !== false && $noticia !== null && $mensagemErro === '') {
+    require_once __DIR__ . '/includes/todas.php';
+}
 require_once __DIR__ . '/includes/rodape.php';
 ?>

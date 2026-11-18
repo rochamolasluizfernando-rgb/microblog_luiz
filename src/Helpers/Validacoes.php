@@ -1,6 +1,9 @@
 <?php
+namespace Microblog\Helpers;
 
 use InvalidArgumentException;
+use Microblog\Enums\Destaque;
+use Microblog\Enums\TipoUsuario;
 
 class Validacoes
 {
@@ -50,6 +53,10 @@ class Validacoes
     {
         if (trim($titulo) === '') {
             throw new InvalidArgumentException("Título não pode ser vazio.");
+        }
+
+        if (mb_strlen($titulo) > 150) {
+            throw new InvalidArgumentException("Título deve ter no máximo 150 caracteres.");
         }
     }
 

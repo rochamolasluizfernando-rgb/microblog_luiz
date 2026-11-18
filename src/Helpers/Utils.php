@@ -1,4 +1,5 @@
 <?php
+namespace Microblog\Helpers;
 
 use Exception;
 use InvalidArgumentException;
@@ -154,7 +155,7 @@ class Utils
             throw new InvalidArgumentException("O nome do arquivo é inválido.");
         }
 
-        $nomeDoArquivo = basename($arquivo["name"]);
+        $nomeDoArquivo = basename(str_replace('\\', '/', $arquivo["name"]));
         $extensao = strtolower(pathinfo($nomeDoArquivo, PATHINFO_EXTENSION));
 
         if ($nomeDoArquivo === "" || mb_strlen($nomeDoArquivo) > 60) {
@@ -167,7 +168,17 @@ class Utils
 
         $caminhoDoArquivo = __DIR__ . "/../../images/" . $nomeDoArquivo;
 
-        // move_uploaded_file substitui o arquivo de destino se o nome já existir.
+        if (file_exists($caminhoDoArquivo)) {
+            $nomeBase = pathinfo($nomeDoArquivo, PATHINFO_FILENAME);
+
+            do {
+                $sufixo = bin2hex(random_bytes(6));
+                $limiteBase = 60 - mb_strlen($extensao) - mb_strlen($sufixo) - 2;
+                $nomeDoArquivo = mb_substr($nomeBase, 0, $limiteBase) . "-" . $sufixo . "." . $extensao;
+                $caminhoDoArquivo = __DIR__ . "/../../images/" . $nomeDoArquivo;
+            } while (file_exists($caminhoDoArquivo));
+        }
+
         if (!move_uploaded_file($arquivo["tmp_name"], $caminhoDoArquivo)) {
             throw new Exception("Não foi possível salvar a imagem enviada.");
         }

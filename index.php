@@ -1,4 +1,5 @@
 <?php
+
 use Microblog\Helpers\Utils;
 use Microblog\Services\NoticiaServico;
 
@@ -29,7 +30,7 @@ try {
                     <article class="card card-noticia shadow-sm h-100">
                         <a href="noticia.php?id=<?= Utils::escaparHtml($noticia['id']) ?>" class="card-link">
                             <img src="images/<?= Utils::escaparHtml($imagem) ?>"
-                                 class="card-img-top" alt="<?= Utils::escaparHtml($noticia['titulo']) ?>">
+                                class="card-img-top" alt="<?= Utils::escaparHtml($noticia['titulo']) ?>">
                             <div class="card-body">
                                 <h3 class="fs-4 card-title"><?= Utils::escaparHtml($noticia['titulo']) ?></h3>
                                 <p class="card-text"><?= Utils::escaparHtml($noticia['resumo']) ?></p>

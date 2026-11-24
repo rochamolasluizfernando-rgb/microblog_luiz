@@ -33,8 +33,7 @@ final class NoticiaServico
             $consulta->execute();
             return $consulta->fetchAll();
         } catch (PDOException $e) {
-            Utils::registrarLog($e);
-            throw new Exception("Erro ao listar notícias em destaque");
+            die($e->getMessage());
         }
     }
 
@@ -59,8 +58,7 @@ final class NoticiaServico
             $consulta->execute();
             return $consulta->fetchAll();
         } catch (PDOException $e) {
-            Utils::registrarLog($e);
-            throw new Exception("Erro ao listar notícias públicas");
+            die($e->getMessage());
         }
     }
 
@@ -309,7 +307,7 @@ final class NoticiaServico
                 'images' . DIRECTORY_SEPARATOR . $nomeImagem;
 
             if (is_file($caminhoImagem) && !unlink($caminhoImagem)) {
-                Utils::registrarLog(new RuntimeException("Não foi possível remover a imagem órfã da notícia."));
+                Utils::registrarLog(new RuntimeException("Não foi possível remover a imagem da notícia."));
             }
         }
 

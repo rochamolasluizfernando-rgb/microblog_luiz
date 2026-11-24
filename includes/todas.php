@@ -8,7 +8,7 @@ $erroTodasNoticias = false;
 try {
     $todasNoticias = (new NoticiaServico())->listarPublicas();
 } catch (Exception $e) {
-    $erroTodasNoticias = true;
+    die($e->getMessage());
 }
 ?>
 
